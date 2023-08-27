@@ -1,0 +1,8 @@
+{
+  "name": "build-redux",
+  "version": "1.0.0",
+  "description": "a project build redux from scratch for practice",
+  "main": "index.js",
+  "author": "benson",
+  "license": "MIT"
+}
