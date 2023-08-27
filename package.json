@@ -4,5 +4,9 @@
   "description": "a project build redux from scratch for practice",
   "main": "index.js",
   "author": "benson",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  }
 }
