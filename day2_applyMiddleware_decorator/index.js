@@ -7,13 +7,13 @@ function createStore(reducer, middleFnV2) {
   }
 
   function dispatch(action) {
-    middleFnV2.before(state);
+    middleFn.before(state);
     state = reducer(state, action);
-    middleFnV2.after(state);
     for (let i = 0; i < listeners.length; i++) {
       const listener = listeners[i];
       listener();
     }
+    middleFn.after(state);
   }
 
   function getState() {
@@ -67,11 +67,11 @@ const reducer = combineReducers({
   milkState: milkReducer,
 });
 
-const middleFnV2 = {
+const middleFn = {
   before: (state) => console.log("logger before", state),
   after: (state) => console.log("logger after", state),
 };
-let store = createStore(reducer, middleFnV2);
+let store = createStore(reducer, middleFn);
 
 // store.subscribe(() => console.log(store.getState()));
 
