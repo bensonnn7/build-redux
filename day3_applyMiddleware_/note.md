@@ -1,3 +1,5 @@
+From last chapter, we know that the key of adding third party's logic is to enhance the dispatch function, we make it execute our function before and after the real `dispatch` function
+
 1. the basic structure keep every thing already coded, but add new logic,
 
 ```js

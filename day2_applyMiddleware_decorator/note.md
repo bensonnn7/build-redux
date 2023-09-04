@@ -28,7 +28,7 @@
    ```
 
 3. However, we have a problems here, we can only call the function before or after the reducer fn, but normally we wants to execute our code before `and` after the reducer fn.
-   3.1 the easiest way is just pass pass 2 function as one, like middleFn.before, and middleFn.after
+   3.1 the easiest way is just pass pass 2 function as one, like middleFn.before, and middleFn.after, place it before and after the reducer function
 
    ```js
    const middleFn = {
@@ -49,11 +49,13 @@
    }
    ```
 
-   it actually works, and very easily fit into my mental model, however it is not the smart way to do, because we pollute our `dispatch` function and it against single responsibility rule, so we need to keep the dispatch function untouched.
+   it actually works, and very easily fit into my mental model, but we pollute our `dispatch` function and it against single responsibility rule, so we need to keep the dispatch function untouched.
 
-4. So what is the solution? `Decorator pattern`: attach new behaviors to objects(function) by placing these objects(function) inside special wrapper(our middleware) objects(function) that contain the behaviors.
-
-   4.1 basically, we pass the dispatch function into our middleware function, and the middleware function will call it
+4. Two way to achieve the clean a `dispatch` fn
+   4.1 Declare an array that contains a list of function `[f1.before, dispatch, f1.after]`(i think it will also work, and this is more fit into human's thinking process) just like how `Axios` did
+   4.2 `Decorator pattern`: attach new behaviors to objects(the dispatch function) by placing it inside special wrapper(our middleware) objects(function) that contain the behaviors.
+   <br/>
+   basically, we pass the dispatch function into our middleware function, and the middleware function will call it
 
    ```js
    function dispatch(action) {
@@ -64,25 +66,29 @@
      }
    }
 
-   // something like
    function mid1(dispatch) {
      // logic1 start
      dispatch();
      // logic1 end
    }
-
-   return function mid1(action) {
-     console.group(action.type);
-     console.info("dispatching", action);
-     // the next is actually the dispatch function
-     let result = next(action);
-     console.log("next state", store.getState());
-     console.groupEnd();
-     return result;
-   };
+   // this will invoke the function directly
    mid1(dispatch);
-   // note: decorator is not limit to function but also object.
-   // it could add more functionality of a object
+
+   // but we wants to enhance the dispatch function, not invoke it directly
+   // so we need to return another dispatch function from mid1
+
+   function newDispatch = mid1(dispatch)
+
+   function mid1(dispatch) {
+    return function(action) {
+      // 1. mid1 logic
+      // 2. dispatch(action)
+      // 3. mid2 logic
+    }
+   }
+   // remember this format of mid1 function, we are gonna use it in next chapter
    ```
+
+note: decorator is not limit to function but also object. it could add more functionality of a object
 
 with this simple solution, we can explore how we implement the applyMiddleware fn (for now, we only focus on one middleware function)
