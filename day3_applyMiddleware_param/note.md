@@ -14,7 +14,7 @@ function mid1(dispatch) {
 
 1. For now, lets re-thing the dispatch function because it is the trigger of core logic. how do we achieve it in the bigger picture? the redux provide a smart way to do it,
 
-   1.1 it first separate the concern of basic and enhanced version of redux by using early return statement(if)
+   1.1 it first separate the concern of basic and enhanced version of store by using early return statement(if)
    1.2 then it re-use the `createStore` inside it, so we can basically remain the same logic but only update the dispatch function(smart)
 
 ```js
@@ -64,10 +64,9 @@ return function enhancer(createStore) {
 
 // step 4: enhance the dispatch
 return function enhancer(createStore) {
-  // this is like the original way to create store
   return function newCreateStore(reducer) {
     const store = createStore(reducer);
-    // we get the old store, we can enhanced it
+    // get the old store, get dispatch, enhance it
 
     const { dispatch } = store;
     // wait where is my mid function?
@@ -92,7 +91,7 @@ function mid1(dispatch) {
     // 3. mid2 logic
   };
 }
-// step 5, add middleware param
+// step 5, add extra layer above enhancer and return it, so it take one more param
 const store = createStore(reducer, applyMiddleware(mid1));
 // the enhancer will close-over the param: middleware
 function applyMiddleware(middleware) {
@@ -101,7 +100,7 @@ function applyMiddleware(middleware) {
       const newStore = createStore(reducer);
 
       const { dispatch } = store;
-      // basic enhanced newDispatch fn
+      // now i can use it enhance dispatch fn
       const newDispatch = middleware(dispatch);
 
       return { ...newStore, dispatch: newDispatch };
@@ -110,7 +109,7 @@ function applyMiddleware(middleware) {
 }
 
 // wait, my middleware doesn't has store, how can it use state?
-// again, more param, one more layer of fn
+// again, more param(store), one more layer of fn
 function mid1(store) {
   return function (dispatch) {
     return function (action) {
@@ -120,14 +119,6 @@ function mid1(store) {
     };
   };
 }
-// lol
-function (dispatch, store) {
-  return function (action) {
-    // 1. mid1 logic
-    // 2. dispatch(action)
-    // 3. mid2 logic
-  };
-};
 
 // step 6: the final version
 function applyMiddleware(middleware) {
