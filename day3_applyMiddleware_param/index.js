@@ -57,12 +57,12 @@ function applyMiddleware(middleware) {
     return function newCreateStore(reducer) {
       const newStore = createStore(reducer);
 
-      const { dispatch } = newStore;
       // decorator 1
       const func = middleware(newStore);
       // well, you can't say it not work....
       // const newDispatch = func(dispatch, store);
       // decorator 2
+      const { dispatch } = newStore;
       const newDispatch = func(dispatch);
 
       return { ...newStore, dispatch: newDispatch };
